@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('image_path')->nullable(true);
-            $table->string('text_article')->nullable(false);
+            $table->string('name_article')->nullable(false);
+            $table->longText('text_article')->nullable(false);
             $table->bigInteger('like_count')->nullable(true);
+            $table->bigInteger('watch_count')->nullable(true);
             $table->bigInteger('comment_count')->nullable(true);
             $table->unsignedBigInteger('user_id')->index();
             $table->timestamps();

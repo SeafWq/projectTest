@@ -17,7 +17,7 @@ class CommentSeeder extends Seeder
         $articles = Article::all();
 
         foreach ($articles as $article){
-            for ($j = 0; $j < rand(5, 10); $j++){
+            for ($j = 0; $j < rand(0, 5); $j++){
                 Comment::create([
                     'article_id'=>$article->id,
                     'text'=>'Comment'.($j+1).'for article '. $article->id
