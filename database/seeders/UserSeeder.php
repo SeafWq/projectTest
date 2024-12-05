@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
         $user = User::create([
             'name' => 'example',
             'email'=>'test@mail.ru',
-            'password'=>'test'
+            'password'=>'test12'
         ]);
 
         $this->call(ArticleSeeder::class);

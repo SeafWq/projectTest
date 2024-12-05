@@ -14,11 +14,19 @@ class ArticleController extends Controller
 
     public function index(Request $request) {
         $page = $request->get('page', 1);
-        $articles = Article::paginate(10);
+
+        $articles = Article::withCount(['likes', 'comments'])
+            ->paginate(10);
+
+        foreach ($articles as $article) {
+            $articles = Article::withCount(['likes', 'comments'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        }
 
         return response()->json([
-            'status'=>'success',
-            'articles' => $articles
+            'status' => 'success',
+            'articles' => $articles,
         ]);
     }
 

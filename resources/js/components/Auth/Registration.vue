@@ -87,6 +87,7 @@
                         password: this.password
                     });
                     if (response.status === 200) {
+                        this.$router.push('/')
                         toast.success('Регистрация прошла успешно');
                     } else {
                         toast.error('Неизвестная ошибка при регистрации');
