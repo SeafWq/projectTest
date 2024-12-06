@@ -19,8 +19,18 @@
 
                     <v-card-subtitle>
                         <v-icon icon="mdi-eye"></v-icon> {{ article.watch_count }}
-                        <v-icon icon="mdi-comment-outline"></v-icon>{{ article.comment_count }}
-                        <v-icon icon="mdi-heart-outline"></v-icon>{{ article.like_count }}
+                        <v-icon icon="mdi-comment-outline"></v-icon>{{ article.comments_count }}
+                        <v-btn
+                            class="ma-2"
+                            :color="article.liked ? 'pink' : 'gray'"
+                            @click="like(article)"
+                        >
+                            Like {{ article.likes_count }}
+                            <v-icon
+                                icon="mdi-heart"
+                                end
+                            ></v-icon>
+                        </v-btn>
 
                     </v-card-subtitle>
                     <v-expand-transition>
@@ -53,11 +63,13 @@
 
 <script>
     import axios from 'axios';
+    import {toast} from "vue3-toastify";
 
     export default {
         name: 'Articles',
         data() {
             return {
+                likedArticles: new Set(),
                 show: false,
                 articles: [],
                 page: 1,
@@ -66,6 +78,11 @@
             };
         },
         mounted() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+
             this.loadArticles();
             window.addEventListener('scroll', this.handleScroll);
         },
@@ -73,6 +90,23 @@
             window.removeEventListener('scroll', this.handleScroll);
         },
         methods: {
+            async like(article) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Пожалуйста, войдите в систему, чтобы поставить лайк.');
+                    return;
+                }
+
+                try {
+                    const response = await axios.post('/api/likes', {
+                        article_id: article.id,
+                    });
+                    article.likes_count = response.data.likeCount;
+                    article.liked = !article.liked;
+                } catch (error) {
+                    console.error('Ошибка при добавлении/удалении лайка:', error);
+                }
+            },
             truncateText(text, length) {
                 if (text.length > length) {
                     return text.substring(0, length) + '...';
@@ -87,6 +121,10 @@
                     .then(response => {
                         if (response.data.status === 'success') {
                             const newArticles = response.data.articles.data;
+
+                            newArticles.forEach(article => {
+                                article.liked = article.liked || false;
+                            });
 
                             if (newArticles.length === 0) {
                                 this.allLoaded = true;

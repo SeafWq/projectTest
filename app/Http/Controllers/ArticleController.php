@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Like;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -14,14 +16,16 @@ class ArticleController extends Controller
 
     public function index(Request $request) {
         $page = $request->get('page', 1);
+        $userId = Auth::id();
 
         $articles = Article::withCount(['likes', 'comments'])
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
+        $likedArticleIds = Like::where('user_id', $userId)->pluck('article_id')->toArray();
+
         foreach ($articles as $article) {
-            $articles = Article::withCount(['likes', 'comments'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
+            $article->liked = in_array($article->id, $likedArticleIds);
         }
 
         return response()->json([
@@ -30,17 +34,27 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function show($id){
+    public function show($id) {
+        $userId = Auth::id();
         $article = Article::with('comments')->where('id', $id)->first();
+
         if ($article !== null) {
+            // Получаем количество лайков
+            $likeCount = $article->likes()->count();
+
+            // Проверяем, лайкнул ли пользователь статью
+            $liked = Like::where('article_id', $id)->where('user_id', $userId)->exists();
+
             return response()->json([
-                'status'=>'success',
-                'article'=>$article
+                'status' => 'success',
+                'article' => $article,
+                'liked' => $liked,
+                'like_count' => $likeCount
             ]);
         } else {
             return response()->json([
-                'status'=>'error',
-                'error'=>'Такого поста не существует'
+                'status' => 'error',
+                'error' => 'Такого поста не существует'
             ], 404);
         }
     }

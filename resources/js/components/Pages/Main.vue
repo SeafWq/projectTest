@@ -19,8 +19,12 @@
 
                     <v-card-subtitle>
                         <v-icon icon="mdi-eye"></v-icon> {{ article.watch_count }}
-                        <v-icon icon="mdi-comment-outline"></v-icon>{{ article.comment_count }}
-                        <v-icon icon="mdi-heart-outline"></v-icon>{{ article.like_count }}
+                        <v-icon icon="mdi-comment-outline"></v-icon>{{ article.comments_count }}
+                        <v-icon  :color="article.liked ? 'pink' : 'gray'"
+                                 @click="like(article)"
+                                 style="cursor: pointer;"
+                                 icon="mdi-heart-outline">
+                        </v-icon>{{ article.likes_count }}
                     </v-card-subtitle>
                     <v-card-text>
                         {{truncateText(article.text_article, 100)}}
@@ -57,6 +61,7 @@
         name: 'Main',
         data() {
             return {
+                likedArticles: new Set(),
                 show: false,
                 articles: [],
                 page: 1,
@@ -65,6 +70,11 @@
             };
         },
         mounted() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+
             this.loadArticles();
             window.addEventListener('scroll', this.handleScroll);
         },
@@ -72,6 +82,25 @@
             window.removeEventListener('scroll', this.handleScroll);
         },
         methods: {
+            async like(article) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Пожалуйста, войдите в систему, чтобы поставить лайк.');
+                    return;
+                }
+
+                try {
+                    const response = await axios.post('/api/likes', {
+                        article_id: article.id,
+                    });
+
+                    // Обновляем количество лайков и состояние лайка
+                    article.likes_count = response.data.likeCount;
+                    article.liked = !article.liked; // Переключаем состояние лайка
+                } catch (error) {
+                    console.error('Ошибка при добавлении/удалении лайка:', error);
+                }
+            },
             truncateText(text, length) {
                 if (text.length > length) {
                     return text.substring(0, length) + '...';
@@ -86,6 +115,11 @@
                     .then(response => {
                         if (response.data.status === 'success') {
                             const newArticles = response.data.articles.data;
+
+                            // Обновляем состояние liked для каждой статьи
+                            newArticles.forEach(article => {
+                                article.liked = article.liked || false; // Устанавливаем состояние лайка
+                            });
 
                             if (newArticles.length === 0) {
                                 this.allLoaded = true;

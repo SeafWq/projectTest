@@ -13,7 +13,11 @@
                 <p>{{ article.text_article }}</p>
                 <div class="mt-3 d-flex justify-end">
                     <v-icon class="ml-3" icon="mdi-eye"></v-icon> {{ article.watch_count }}
-                    <v-icon class="ml-3" icon="mdi-heart-outline"></v-icon>{{ article.like_count }}
+                    <v-icon  :color="article.liked ? 'pink' : 'gray'"
+                             @click="like(article)"
+                             style="cursor: pointer;"
+                             icon="mdi-heart-outline">
+                    </v-icon>{{ article.like_count }}
                 </div>
                 <v-divider></v-divider>
                 <h2>Оставить комментарий</h2>
@@ -59,15 +63,38 @@
             };
         },
         mounted() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
             this.fetchArticle();
         },
         methods: {
+            async like(article) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Пожалуйста, войдите в систему, чтобы поставить лайк.');
+                    return;
+                }
+
+                try {
+                    const response = await axios.post('/api/likes', {
+                        article_id: article.id,
+                    });
+                    article.like_count = response.data.likeCount;
+                    article.liked = !article.liked;
+                } catch (error) {
+                    console.error('Ошибка при добавлении/удалении лайка:', error);
+                }
+            },
             async fetchArticle() {
                 const articleId = this.$route.params.id;
                 try {
                     const response = await axios.get(`/api/articles/${articleId}`);
                     if (response.data.status === 'success') {
                         this.article = response.data.article;
+                        this.article.liked = response.data.liked;
+                        this.article.like_count = response.data.like_count;
                     } else {
                         this.error = response.data.error;
                     }

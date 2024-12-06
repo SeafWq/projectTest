@@ -19,7 +19,7 @@ class LikeSeeder extends Seeder
         $users = User::all();
 
         foreach ($articles as $article) {
-            $likeCount = rand(100, 1000);
+            $likeCount = rand(10, 69);
 
             for ($i = 0; $i < $likeCount; $i++) {
                 $user = $users->random();

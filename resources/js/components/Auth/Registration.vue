@@ -88,6 +88,7 @@
                     });
                     if (response.status === 200) {
                         this.$router.push('/')
+                        localStorage.setItem('token', response.data.authorization.token);
                         toast.success('Регистрация прошла успешно');
                     } else {
                         toast.error('Неизвестная ошибка при регистрации');

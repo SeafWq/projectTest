@@ -78,6 +78,8 @@
                         password: this.password
                     });
                     if (response.status === 200) {
+                        localStorage.setItem('token', response.data.authorization.token);
+                        this.$router.push('/')
                         toast.success('Авторизация прошла успешно');
                     } else {
                         toast.error('Неизвестная ошибка при авторизации');
