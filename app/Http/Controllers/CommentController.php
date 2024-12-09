@@ -15,16 +15,22 @@ class CommentController extends Controller
     }
 
     public function store (Request $request) {
+
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $userId = Auth::id();
+
         $request->validate([
             'article_id' => 'required|exists:articles,id',
             'text'=>'required|string|max:2048'
         ]);
 
-        $userId = Auth::id();
-
         $comment = Comment::create([
-            'article_id'=>$request->article_id,
-            'text'=>$request->text
+            'user_id' => $userId,
+            'article_id'=> $request->article_id,
+            'text' => $request->text,
         ]);
 
         $commentCount = Comment::where('article_id', $request->article_id)->count();

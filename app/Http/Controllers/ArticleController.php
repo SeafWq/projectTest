@@ -50,7 +50,7 @@ class ArticleController extends Controller
                 'article' => $article,
                 'liked' => $liked,
                 'like_count' => $likeCount,
-                'comments_count'=>$commentCount
+                'comments_count'=>$commentCount,
             ]);
         } else {
             return response()->json([
