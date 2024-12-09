@@ -31,7 +31,7 @@ Route::controller(ArticleController::class)->group(function () {
 });
 
 Route::controller(LikeController::class)->group(function () {
-    Route::post('/likes', 'store');
+    Route::post('/likes', 'store')->middleware('throttle:100,1');
 });
 
 Route::controller(CommentController::class)->group(function () {

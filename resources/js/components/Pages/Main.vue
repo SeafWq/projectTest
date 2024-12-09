@@ -19,7 +19,8 @@
 
                     <v-card-subtitle>
                         <v-icon icon="mdi-eye"></v-icon> {{ article.watch_count }}
-                        <v-icon icon="mdi-comment-outline"></v-icon>{{ article.comments_count }}
+                        <v-icon
+                            icon="mdi-comment-outline" style="cursor: pointer"></v-icon>{{ article.comments_count }}
                         <v-icon  :color="article.liked ? 'pink' : 'gray'"
                                  @click="like(article)"
                                  style="cursor: pointer;"

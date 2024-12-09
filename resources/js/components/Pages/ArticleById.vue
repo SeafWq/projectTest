@@ -20,6 +20,7 @@
                     </v-icon>{{ article.like_count }}
                 </div>
                 <v-divider></v-divider>
+                <p><a name="comments"></a></p>
                 <h2>Оставить комментарий</h2>
                 <v-textarea
                     v-model="text"
