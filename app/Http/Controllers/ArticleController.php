@@ -41,6 +41,7 @@ class ArticleController extends Controller
         if ($article !== null) {
 
             $likeCount = $article->likes()->count();
+            $commentCount = $article->comments()->count();
 
             $liked = Like::where('article_id', $id)->where('user_id', $userId)->exists();
 
@@ -48,7 +49,8 @@ class ArticleController extends Controller
                 'status' => 'success',
                 'article' => $article,
                 'liked' => $liked,
-                'like_count' => $likeCount
+                'like_count' => $likeCount,
+                'comments_count'=>$commentCount
             ]);
         } else {
             return response()->json([

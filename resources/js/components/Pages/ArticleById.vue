@@ -36,7 +36,7 @@
                 <v-icon icon="mdi-send" variant="tonal" @click="sendComment(article)"></v-icon>
 
                 <v-divider></v-divider>
-                <h3>Комментарии: <v-icon class="ml-3" icon="mdi-comment-outline"></v-icon>{{ article.comment_count }}</h3>
+                <h3>Комментарии: <v-icon class="ml-3" icon="mdi-comment-outline"></v-icon>{{ article.comments_count }}</h3>
                 <v-list>
                     <v-list-item-group>
                         <v-list-item v-for="comment in article.comments" :key="comment.id">
@@ -98,7 +98,7 @@
                     };
 
                     article.comments.unshift(newComment);
-                    article.comment_count += 1;
+                    article.comments_count += 1;
                     this.text = null;
                 } catch (error) {
                     console.log('Ошибка при добавлении комментария:', error);
@@ -128,6 +128,7 @@
                     if (response.data.status === 'success') {
                         this.article = response.data.article;
                         this.article.liked = response.data.liked;
+                        this.article.comments_count = response.data.comments_count;
                         this.article.like_count = response.data.like_count;
                         this.article.comments.reverse();
                     } else {
