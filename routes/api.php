@@ -28,6 +28,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::controller(ArticleController::class)->group(function () {
    Route::get('articles', 'index');
    Route::get('articles/{id}', 'show');
+   Route::post('/article/create', 'store');
 });
 
 Route::controller(LikeController::class)->group(function () {

@@ -2,8 +2,8 @@
     <v-container>
         <v-card class="ma-2" style="width: 1200px;"  v-if="article">
             <v-img
-                height="340px"
-                src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+                height="540px"
+                :src="article.image_path ? article.image_path : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'"
                 cover
             ></v-img>
             <v-card-title>

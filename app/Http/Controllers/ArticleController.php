@@ -25,6 +25,9 @@ class ArticleController extends Controller
         $likedArticleIds = Like::where('user_id', $userId)->pluck('article_id')->toArray();
 
         foreach ($articles as $article) {
+            if ($article->image_path !== null) {
+                $article->image_path = asset('storage/' . $article->image_path);
+            }
             $article->liked = in_array($article->id, $likedArticleIds);
         }
 
@@ -44,6 +47,9 @@ class ArticleController extends Controller
             $commentCount = $article->comments()->count();
 
             $liked = Like::where('article_id', $id)->where('user_id', $userId)->exists();
+            if ($article->image_path !== null) {
+                $article->image_path = asset('storage/' . $article->image_path);
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -58,6 +64,27 @@ class ArticleController extends Controller
                 'error' => 'Такого поста не существует'
             ], 404);
         }
+    }
+
+    public function store(Request $request) {
+        $request->validate([
+            'nameArticle'=> 'required|string|max:255',
+            'imagePath'=> 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'textArticle'=> 'required|string|max:2048'
+        ]);
+        $imagePath = $request->file('imagePath')->store('images', 'public');
+
+        $article = Article::create([
+            'user_id' => Auth::id(),
+            'name_article'=>$request->nameArticle,
+            'text_article'=>$request->textArticle,
+            'image_path'=>$imagePath
+        ]);
+
+        return response()->json([
+            'status'=>'success',
+            'article'=>$article
+        ]);
     }
 }
 

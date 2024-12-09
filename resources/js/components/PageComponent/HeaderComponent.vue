@@ -8,6 +8,7 @@
         >
             <v-tab :value="'/'" to="/">Главная страница</v-tab>
             <v-tab :value="'/articles'" to="/articles">Каталог статей</v-tab>
+            <v-tab v-if="isAuthenticated" :value="'/createNewArticle'"  to="/createNewArticle">Новая статья</v-tab>
             <v-tab v-if="!isAuthenticated" :value="'/login'" to="/login">Авторизация</v-tab>
             <v-tab v-if="!isAuthenticated" :value="'/register'" to="/register">Регистрация</v-tab>
             <v-tab v-if="isAuthenticated" :value="'/logout'"  @click="logout">Выйти</v-tab>
@@ -53,7 +54,7 @@
                 } catch (error) {
                     console.error('Ошибка при выходе:', error);
                 }
-            }
+            },
         }
     }
 </script>

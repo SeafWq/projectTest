@@ -9,7 +9,7 @@
                 <v-card class="mx-auto" max-width="344">
                     <v-img
                         height="200px"
-                        src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+                        :src="article.image_path ? article.image_path : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'"
                         cover
                     ></v-img>
 

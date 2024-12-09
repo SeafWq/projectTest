@@ -4,6 +4,7 @@ import Main from "./components/Pages/Main.vue";
 import Login from "./components/Auth/Login.vue";
 import Registration from "./components/Auth/Registration.vue";
 import ArticleById from "./components/Pages/ArticleById.vue";
+import CreateNewArticle from "./components/Pages/CreateNewArticle.vue";
 
 export const routes = [
     {
@@ -25,6 +26,10 @@ export const routes = [
     {
         path: '/register',
         component: Registration
+    },
+    {
+        path: '/createNewArticle',
+        component: CreateNewArticle
     }
 ];
 
