@@ -22,6 +22,7 @@
                 <v-divider></v-divider>
                 <h2>Оставить комментарий</h2>
                 <v-textarea
+                    v-model="text"
                     label="Сообщение"
                     row-height="30"
                     rows="4"
@@ -29,7 +30,11 @@
                     auto-grow
                     shaped
                     prepend-icon="mdi-comment"
+                    @keydown="handleKeydown"
                 ></v-textarea>
+                <v-spacer></v-spacer>
+                <v-icon icon="mdi-send" variant="tonal" @click="sendComment(article)"></v-icon>
+
                 <v-divider></v-divider>
                 <h3>Комментарии: <v-icon class="ml-3" icon="mdi-comment-outline"></v-icon>{{ article.comment_count }}</h3>
                 <v-list>
@@ -52,24 +57,53 @@
 </template>
 
 <script>
-    import axios from 'axios';
+    import axios from '/resources/js/config/axios';
 
     export default {
         data() {
             return {
+                text: null,
                 article: null,
                 loading: true,
                 error: null,
             };
         },
         mounted() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            }
             this.fetchArticle();
         },
         methods: {
+            handleKeydown(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    this.sendComment(this.article);
+                }
+            },
+            async sendComment(article) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Пожалуйста, войдите в систему, чтобы оставить комментарий.');
+                    return;
+                }
+
+                try {
+                    const response = await axios.post('/api/sendComment', {
+                        article_id: article.id,
+                        text: this.text
+                    });
+
+                    const newComment = {
+                        id: response.data.id,
+                        text: this.text,
+                        created_at: new Date().toISOString()
+                    };
+
+                    article.comments.unshift(newComment);
+                    article.comment_count += 1;
+                    this.text = null;
+                } catch (error) {
+                    console.log('Ошибка при добавлении комментария:', error);
+                }
+            },
             async like(article) {
                 const token = localStorage.getItem('token');
                 if (!token) {
@@ -95,6 +129,7 @@
                         this.article = response.data.article;
                         this.article.liked = response.data.liked;
                         this.article.like_count = response.data.like_count;
+                        this.article.comments.reverse();
                     } else {
                         this.error = response.data.error;
                     }

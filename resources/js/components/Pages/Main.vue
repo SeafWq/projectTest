@@ -45,7 +45,6 @@
         <v-row no-gutters>
             <v-col>
                 <v-sheet class="pa-4 ma-10">
-                    <!-- Дополнительный контент -->
                 </v-sheet>
                 <div v-if="loading" class="loading">Загрузка...</div>
             </v-col>
@@ -55,7 +54,7 @@
 
 
 <script>
-    import axios from 'axios';
+    import axios from '/resources/js/config/axios';
 
     export default {
         name: 'Main',
@@ -70,11 +69,6 @@
             };
         },
         mounted() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            }
-
             this.loadArticles();
             window.addEventListener('scroll', this.handleScroll);
         },
@@ -94,9 +88,8 @@
                         article_id: article.id,
                     });
 
-                    // Обновляем количество лайков и состояние лайка
                     article.likes_count = response.data.likeCount;
-                    article.liked = !article.liked; // Переключаем состояние лайка
+                    article.liked = !article.liked;
                 } catch (error) {
                     console.error('Ошибка при добавлении/удалении лайка:', error);
                 }
@@ -116,9 +109,8 @@
                         if (response.data.status === 'success') {
                             const newArticles = response.data.articles.data;
 
-                            // Обновляем состояние liked для каждой статьи
                             newArticles.forEach(article => {
-                                article.liked = article.liked || false; // Устанавливаем состояние лайка
+                                article.liked = article.liked || false;
                             });
 
                             if (newArticles.length === 0) {

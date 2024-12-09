@@ -62,7 +62,7 @@
 
 
 <script>
-    import axios from 'axios';
+    import axios from '/resources/js/config/axios';
     import {toast} from "vue3-toastify";
 
     export default {
@@ -78,11 +78,6 @@
             };
         },
         mounted() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            }
-
             this.loadArticles();
             window.addEventListener('scroll', this.handleScroll);
         },

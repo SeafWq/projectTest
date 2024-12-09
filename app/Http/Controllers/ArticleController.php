@@ -39,10 +39,9 @@ class ArticleController extends Controller
         $article = Article::with('comments')->where('id', $id)->first();
 
         if ($article !== null) {
-            // Получаем количество лайков
+
             $likeCount = $article->likes()->count();
 
-            // Проверяем, лайкнул ли пользователь статью
             $liked = Like::where('article_id', $id)->where('user_id', $userId)->exists();
 
             return response()->json([
